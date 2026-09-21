@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 88" role="img" aria-labelledby="title desc">
+  <title id="title">SPM logo</title><desc id="desc">SPM coloured hexagonal technology mark and dark wordmark</desc>
+  <path d="M43 3 76 22v39L43 81 10 61V22Z" fill="none"/>
+  <path d="M43 3 76 22v16L68 42V27L43 13Z" fill="#35bb85"/>
+  <path d="m10 22 33-19v10L18 27v19l-8-4Z" fill="#e84964"/>
+  <path d="m10 46 8 4v11l25 14v9L10 65Z" fill="#f3c331"/>
+  <path d="m43 84 25-14v-9l8-4v8L43 84Z" fill="#38a8c5"/>
+  <circle cx="43" cy="43" r="19" fill="none" stroke="#38a8c5" stroke-width="4"/>
+  <path d="M29 40 40 29l12 5 5 14-12 10-14-5Zm11-11 3 14m9-9-12 9m17 5-12-5m0 15V43m-16-3 16 3" fill="none" stroke="#38a8c5" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="29" cy="40" r="3" fill="#38a8c5"/><circle cx="40" cy="29" r="3" fill="#38a8c5"/><circle cx="57" cy="48" r="3" fill="#38a8c5"/><circle cx="45" cy="58" r="3" fill="#38a8c5"/>
+  <text x="91" y="60" fill="#111" font-family="Arial, Helvetica, sans-serif" font-size="57" font-weight="800" letter-spacing="-3">SPM</text>
+</svg>
