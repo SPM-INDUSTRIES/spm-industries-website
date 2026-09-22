@@ -1,0 +1,112 @@
+:root {
+  --serif: 'Manrope', sans-serif;
+  --sans: 'Manrope', sans-serif;
+  --type-display: 'Manrope', sans-serif;
+  --type-body: 'Manrope', sans-serif;
+}
+
+body {
+  font-family: var(--type-body);
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+h3,
+.brand-mark,
+.site-footer__logo {
+  font-family: var(--type-display);
+}
+
+h1,
+h2,
+h3,
+p,
+.nav,
+.btn,
+.text-link,
+.arrow-link,
+.label,
+.eyebrow,
+.site-footer,
+.contact-details,
+input,
+textarea,
+select,
+button {
+  font-family: var(--type-body);
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+h1 {
+  line-height: 1.06;
+}
+
+h2 {
+  line-height: 1.1;
+}
+
+h3 {
+  line-height: 1.2;
+}
+
+.lead {
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+p,
+.contact-details,
+.site-footer__brand p,
+.site-footer__section,
+.site-footer__connect-copy {
+  line-height: 1.7;
+}
+
+.eyebrow,
+.label,
+.site-footer__label,
+.time {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.nav > a,
+.btn,
+.text-link,
+.arrow-link,
+.site-footer__linkedin,
+.site-footer__bottom {
+  font-weight: 700;
+}
+
+.site-footer__logo {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    line-height: 1.08;
+  }
+
+  h2 {
+    line-height: 1.12;
+  }
+}
