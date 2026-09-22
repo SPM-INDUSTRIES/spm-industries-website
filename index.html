@@ -8,12 +8,210 @@
   <meta name="keywords" content="SPM Industries, Batticaloa, MSME, technology, innovation, entrepreneurship, renewable energy">
   <meta property="og:title" content="SPM Industries | Building Batticaloa's Future"><meta property="og:description" content="Technology, innovation and entrepreneurship for sustainable growth."><meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/footer.css">
-  <style>footer{padding:48px 0 16px}.footer-grid{gap:32px}.footer-grid .brand{margin-bottom:14px;background:#fff;padding:7px 12px 7px 8px;border-radius:10px;width:max-content}.footer-grid .brand img{width:180px!important}.footer-grid>div>p:not(.label){font-size:11px}.footer-grid .label{margin-bottom:11px}.footer-grid a:not(.brand){margin-bottom:5px}.copyright{margin-top:36px;padding-top:14px}.social-links{display:flex;align-items:center;gap:16px}.social-links a{display:inline-flex;align-items:center}.impact-path{gap:13px}.impact-path div{font-size:12px;padding:15px 19px}.impact-path i{padding-left:9px}@media(min-width:761px){.nav>a{font-size:14px}.nav .btn-small{font-size:13px}}</style>
+  <style>
+    .spm-footer {
+      position: relative;
+      overflow: hidden;
+      background: #041f1d;
+      color: #edf3f1;
+      padding: 88px 0 20px;
+      border-top: 1px solid rgba(170, 190, 183, 0.28);
+    }
+    .spm-footer::before {
+      content: "";
+      position: absolute;
+      width: 540px;
+      height: 540px;
+      right: -185px;
+      top: -290px;
+      border: 1px solid rgba(157, 185, 177, 0.18);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .spm-footer__inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.45fr 1fr 1.2fr;
+      gap: clamp(34px, 5vw, 110px);
+      align-items: start;
+      min-height: 310px;
+    }
+    .spm-footer__brand-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+    }
+    .spm-footer__brand-box img {
+      display: block;
+      max-height: 50px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    .spm-footer__copy {
+      max-width: 530px;
+      margin-top: 28px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 23px;
+      line-height: 1.6;
+      letter-spacing: -0.04em;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 400;
+    }
+    .spm-footer__column {
+      align-self: start;
+    }
+    .spm-footer__label {
+      margin: 0 0 24px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .spm-footer__column p,
+    .spm-footer__column a {
+      margin: 0 0 10px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 20px;
+      line-height: 1.6;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+      font-family: 'Manrope', sans-serif;
+    }
+    .spm-footer__column p {
+      max-width: 310px;
+    }
+    .spm-footer__phone,
+    .spm-footer__email {
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .spm-footer__connect-copy {
+      max-width: 420px;
+      font-size: 21px;
+      line-height: 1.6;
+      letter-spacing: -0.03em;
+      margin-bottom: 18px;
+    }
+    .spm-footer__linkedin {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 330px;
+      padding: 16px 20px;
+      border: 1px solid rgba(167, 191, 182, 0.6);
+      border-radius: 12px;
+      text-decoration: none;
+      color: rgba(236, 243, 241, 0.96);
+      background: rgba(255, 255, 255, 0.01);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .spm-footer__linkedin:hover {
+      border-color: rgba(217, 230, 105, 0.85);
+      transform: translateY(-1px);
+    }
+    .spm-footer__linkedin-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #dfe7e3;
+      color: #061f1d;
+      font-weight: 800;
+      font-size: 21px;
+      line-height: 1;
+      font-family: 'Manrope', sans-serif;
+    }
+    .spm-footer__linkedin-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      font-family: 'Manrope', sans-serif;
+    }
+    .spm-footer__linkedin-arrow {
+      color: #dfe760;
+      font-size: 24px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+    .spm-footer__bottom {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid rgba(167, 191, 182, 0.4);
+      margin-top: 24px;
+      padding-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      color: rgba(206, 218, 214, 0.8);
+      font-size: 18px;
+      line-height: 1.6;
+      font-family: 'Manrope', sans-serif;
+    }
+    .spm-footer__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(237, 243, 241, 0.96);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .spm-footer__back-symbol {
+      color: #dfe760;
+      font-size: 22px;
+      line-height: 1;
+    }
+    @media (max-width: 900px) {
+      .spm-footer__inner {
+        grid-template-columns: 1fr;
+      }
+      .spm-footer__copy,
+      .spm-footer__column p,
+      .spm-footer__connect-copy {
+        max-width: none;
+      }
+      .spm-footer__linkedin {
+        min-width: auto;
+      }
+      .spm-footer__bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+    @media (max-width: 560px) {
+      .spm-footer {
+        padding-top: 64px;
+      }
+      .spm-footer__brand-box img {
+        max-width: 100%;
+      }
+      .spm-footer__copy,
+      .spm-footer__column p,
+      .spm-footer__connect-copy,
+      .spm-footer__column a,
+      .spm-footer__bottom {
+        font-size: 17px;
+      }
+      .spm-footer__linkedin {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="header" id="top"><div class="nav-wrap">
-  <a class="brand" href="#home" aria-label="SPM Industries home" style="background:#fff;padding:7px 12px 7px 8px;border-radius:10px"><img src="assets/logos/spm-logo.svg" alt="SPM" style="display:block;width:116px;height:auto"></a>
+  <a class="brand" href="#home" aria-label="SPM Industries home" style="background:#fff;padding:7px 12px 7px 8px;border-radius:10px"><img src="SPM Horizontal (2).png" alt="SPM" style="display:block;width:116px;height:auto"></a>
   <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
   <nav id="site-nav" class="nav"><a href="#home">Home</a><a href="#about">About</a><a href="#ecosystem">Our Ecosystem</a><a href="#navigate">How We Navigate</a><a href="#story">Our Story</a><a href="#contact">Contact</a><a class="btn btn-small header-cta" href="#contact" style="background:#9a9e9c;color:#111">Join the Ecosystem</a></nav>
 </div></header>
@@ -48,5 +246,38 @@
 
 <section class="section contact" id="contact"><div class="container"><div class="section-top reveal"><div><p class="eyebrow">07 &mdash; CONTACT</p><h2>Start a meaningful<br><em>conversation.</em></h2></div><p>We are building with people who see what is possible and are ready to help make it real.</p></div><div class="contact-grid"><div class="contact-details reveal"><p class="label">SPM INDUSTRIES</p><a href="https://maps.google.com/?q=24%2F6A+Boundary+Road+South%2C+Batticaloa%2C+Sri+Lanka" target="_blank" rel="noopener"><span>&#8998;</span>24/6A Boundary Road South<br> &nbsp;&nbsp;&nbsp;&nbsp;Batticaloa, Sri Lanka</a><a href="tel:+94740163180"><span>&#9675;</span>074 016 3180</a><a href="mailto:info@spm.industries"><span>&#9993;</span>info@spm.industries</a><a href="https://www.linkedin.com/company/spm-industries/" target="_blank" rel="noopener"><span>in</span>LinkedIn</a></div><div class="map-placeholder reveal"><iframe src="https://www.google.com/maps?q=24%2F6A+Boundary+Road+South%2C+Batticaloa%2C+Sri+Lanka&amp;output=embed" title="Map showing SPM Industries at 24/6A Boundary Road South, Batticaloa, Sri Lanka" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></div></section>
 </main>
-<footer><div class="container footer-grid"><div><a class="brand" href="#home" aria-label="SPM Industries home"><img src="assets/logos/spm-logo-dark.svg" alt="SPM" style="display:block;width:146px;height:auto"></a><p>Building the future through technology, innovation, entrepreneurship, and community empowerment.</p></div><div><p class="label">NAVIGATE</p><a href="#home">Home</a><a href="#about">About</a><a href="#ecosystem">Our Ecosystem</a><a href="#navigate">How We Navigate</a><a href="#story">Our Story</a><a href="#contact">Contact</a></div><div><p class="label">COMPANIES</p><a href="#ecosystem">SPM Academy</a><a href="#ecosystem">SPM Renewables</a><a href="#ecosystem">SPM Technologies</a><a href="#ecosystem">SPM Foundation</a></div><div><p class="label">CONTACT</p><p>24/6A Boundary Road South<br>Batticaloa, Sri Lanka</p><a href="tel:+94740163180">074 016 3180</a><a href="mailto:info@spm.industries">info@spm.industries</a></div></div><div class="container copyright"><span>&copy; 2026 SPM Industries. All rights reserved.</span><div class="social-links"><a href="https://www.facebook.com/tech.spm.industries" target="_blank" rel="noopener" aria-label="SPM Industries on Facebook"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1V10H8v3h2.4v8h3.1Z"/></svg></a><a href="https://www.youtube.com/@spmlk_tech" target="_blank" rel="noopener" aria-label="SPM Industries on YouTube"><svg viewBox="0 0 24 24" width="18" height="14" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg></a><a href="https://www.linkedin.com/company/spm-industries/" target="_blank" rel="noopener">LinkedIn &nearr;</a></div></div></footer>
+<footer class="spm-footer">
+  <div class="container spm-footer__inner">
+    <div class="spm-footer__brand">
+      <div class="spm-footer__brand-box">
+        <img src="Enterprise white.png" alt="SPM Industries logo">
+      </div>
+      <p class="spm-footer__copy">Building innovative businesses and initiatives that use technology to create lasting economic, educational, environmental, and social impact.</p>
+    </div>
+
+    <div class="spm-footer__column">
+      <h3 class="spm-footer__label">Contact</h3>
+      <p>24/6A Boundary Road South<br>Batticaloa, Sri Lanka</p>
+      <p class="spm-footer__phone">074 016 3180</p>
+      <p class="spm-footer__email">info@spm.industries</p>
+    </div>
+
+    <div class="spm-footer__column">
+      <h3 class="spm-footer__label">Connect</h3>
+      <p class="spm-footer__connect-copy">Follow the ideas, initiatives, and impact taking shape across the SPM ecosystem.</p>
+      <a class="spm-footer__linkedin" href="https://www.linkedin.com/company/spm-industries/" target="_blank" rel="noopener" aria-label="SPM Industries on LinkedIn">
+        <span class="spm-footer__linkedin-mark">in</span>
+        <span class="spm-footer__linkedin-text">SPM Industries on LinkedIn <span class="spm-footer__linkedin-arrow">↗</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="container spm-footer__bottom">
+    <span>© 2026 SPM Industries. All rights reserved.</span>
+    <a class="spm-footer__back" href="#top" aria-label="Back to top">
+      <span>Back to top</span>
+      <span class="spm-footer__back-symbol">↑</span>
+    </a>
+  </div>
+</footer>
 <script src="js/script.js"></script></body></html>
