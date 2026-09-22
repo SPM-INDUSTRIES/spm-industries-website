@@ -1,0 +1,2 @@
+/* Preserve each 3:2 venture logo without cropping it inside its card. */
+.company-card .placeholder.card-image img{object-fit:contain;object-position:center;background:#fff;padding:20px}
