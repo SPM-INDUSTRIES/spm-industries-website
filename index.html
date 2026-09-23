@@ -8,6 +8,7 @@
   <meta name="keywords" content="SPM Industries, Batticaloa, MSME, technology, innovation, entrepreneurship, renewable energy">
   <meta property="og:title" content="SPM Industries | Building Batticaloa's Future"><meta property="og:description" content="Technology, innovation and entrepreneurship for sustainable growth."><meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/footer.css"><link rel="stylesheet" href="css/venture-logos.css"><link rel="stylesheet" href="css/content-images.css">
+  <link rel="stylesheet" href="css/spm-ai-assistant.css">
   <style>
     .header .nav > a { font-size: 14px; }
     .header .nav > a.btn-small { font-size: 13px; }
@@ -291,4 +292,49 @@
     </a>
   </div>
 </footer>
-<script src="js/script.js"></script></body></html>
+
+<!-- SPM AI Assistant -->
+<section class="spm-ai" aria-label="SPM AI Assistant">
+  <button class="spm-ai__launcher" type="button" aria-expanded="false" aria-controls="spm-ai-panel">
+    <span class="spm-ai__launcher-icon" aria-hidden="true">✦</span>
+    <span>Ask SPM AI</span>
+  </button>
+
+  <div class="spm-ai__panel" id="spm-ai-panel" role="dialog" aria-modal="false" aria-labelledby="spm-ai-title" hidden>
+    <header class="spm-ai__header">
+      <div>
+        <p class="spm-ai__eyebrow">SPM INDUSTRIES</p>
+        <h2 id="spm-ai-title">SPM AI Assistant</h2>
+        <p>Your gateway to SPM Industries</p>
+      </div>
+      <button class="spm-ai__close" type="button" aria-label="Close SPM AI Assistant">×</button>
+    </header>
+
+    <div class="spm-ai__messages" aria-live="polite" aria-relevant="additions">
+      <div class="spm-ai__message spm-ai__message--assistant">
+        <p>Hi! 👋 I’m the SPM AI Assistant.</p>
+        <p>How can I help you today?</p>
+      </div>
+    </div>
+
+    <div class="spm-ai__quick-actions" aria-label="Suggested questions">
+      <button type="button" data-prompt="Business Enquiry">💼 Business Enquiry</button>
+      <button type="button" data-prompt="Partnership Opportunity">🤝 Partnership Opportunity</button>
+      <button type="button" data-prompt="Entrepreneurship Support">🚀 Entrepreneurship Support</button>
+      <button type="button" data-prompt="Education Programmes">🎓 Education Programmes</button>
+      <button type="button" data-prompt="Sustainability Solutions">🌱 Sustainability Solutions</button>
+      <button type="button" data-prompt="About SPM Industries">🏢 About SPM Industries</button>
+    </div>
+
+    <form class="spm-ai__input" novalidate>
+      <label class="spm-ai__sr-only" for="spm-ai-question">Ask a question</label>
+      <input id="spm-ai-question" name="question" type="text" placeholder="Ask about SPM Industries…" autocomplete="off">
+      <button type="submit" aria-label="Send question">Send</button>
+    </form>
+  </div>
+</section>
+
+<script src="js/script.js"></script>
+<script src="js/spm-ai-assistant.js"></script>
+</body>
+</html>
