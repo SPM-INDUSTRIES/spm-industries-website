@@ -1,9 +1,7 @@
 /*
  * SPM AI Assistant
  *
- * This dependency-free assistant deliberately answers only from the approved
- * on-page knowledge base. Connect the lead form to a CRM or API when one is
- * available; until then, it prepares a complete enquiry for the SPM team.
+ * This dependency-free assistant sends questions to the local Flask API.
  */
 (() => {
   const assistant = document.querySelector('.spm-ai');
@@ -19,37 +17,8 @@
   const quickActions = assistant.querySelector('.spm-ai__quick-actions');
   const questionForm = assistant.querySelector('.spm-ai__input');
   const questionInput = assistant.querySelector('#spm-ai-question');
-
-  const knowledgeBase = [
-    {
-      matches: ['about', 'spm industries', 'company', 'location', 'batticaloa'],
-      answer: 'SPM Industries is a diversified business ecosystem in Batticaloa, Sri Lanka. We support individuals, businesses and communities through technology, education, renewable energy, agriculture, entrepreneurship and sustainable solutions.'
-    },
-    {
-      matches: ['technology', 'technologies', 'software', 'digital', 'it service', 'iot', 'erp'],
-      answer: 'SPM Technologies works on technology solutions, digital innovation, software, IT services and technology-driven projects. Businesses interested in collaboration can share an enquiry with the Technologies team.'
-    },
-    {
-      matches: ['academy', 'education', 'course', 'courses', 'register', 'registration', 'learn', 'student'],
-      answer: 'SPM Academy provides education and skill-development programmes, including technology-based learning. Please share your learning interest and contact details, and the Academy team can guide you on suitable opportunities and registration.'
-    },
-    {
-      matches: ['renewable', 'sustainability', 'solar', 'energy', 'sustainable'],
-      answer: 'SPM Renewables focuses on renewable energy and sustainability initiatives, including renewable solutions and sustainability projects. We welcome enquiries about collaboration opportunities.'
-    },
-    {
-      matches: ['foundation', 'community', 'social impact', 'community project'],
-      answer: 'SPM Foundation leads community development and social-impact initiatives. It supports projects across climate action, education, youth and livelihoods, and welcomes partnership discussions.'
-    },
-    {
-      matches: ['agri', 'agriculture', 'farming', 'farm'],
-      answer: 'SPM Agri focuses on agriculture innovation and development. You can share an agriculture collaboration or business requirement with the SPM team for the appropriate follow-up.'
-    },
-    {
-      matches: ['entrepreneur', 'startup', 'msme', 'business support', 'mentorship'],
-      answer: 'SPM supports entrepreneurs and MSMEs through technology, knowledge, resources, networks and opportunities. Support may include skills development, business guidance, technology and innovation, incubation, acceleration and partnership pathways.'
-    }
-  ];
+  const submitButton = questionForm.querySelector('button[type="submit"]');
+  const chatEndpoint = 'http://127.0.0.1:5000/chat';
 
   function scrollMessagesToBottom() {
     messages.scrollTop = messages.scrollHeight;
@@ -64,6 +33,7 @@
     message.appendChild(paragraph);
     messages.appendChild(message);
     scrollMessagesToBottom();
+    return message;
   }
 
   function createLeadForm() {
@@ -132,21 +102,32 @@
     leadForm.querySelector('input').focus();
   }
 
-  function respondTo(question) {
-    const normalizedQuestion = question.toLowerCase();
-    const leadKeywords = ['enquiry', 'inquiry', 'partner', 'partnership', 'collaborate', 'collaboration', 'contact', 'work with', 'opportunity'];
+  async function respondTo(question) {
+    const pendingMessage = addMessage('Thinking…');
 
-    if (leadKeywords.some(keyword => normalizedQuestion.includes(keyword))) {
-      addMessage('I can help connect you with the right SPM team.');
-      showLeadForm();
-      return;
+    try {
+      const response = await fetch(chatEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: question })
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || 'The chatbot request failed.');
+      }
+
+      pendingMessage.querySelector('p').textContent = data.response;
+    } catch (error) {
+      pendingMessage.querySelector('p').textContent = error instanceof TypeError
+        ? 'I cannot reach the chatbot server. Please make sure the backend is running.'
+        : error.message;
+    } finally {
+      questionInput.disabled = false;
+      submitButton.disabled = false;
+      questionInput.focus();
+      scrollMessagesToBottom();
     }
-
-    const match = knowledgeBase.find(entry => entry.matches.some(term => normalizedQuestion.includes(term)));
-
-    addMessage(match
-      ? match.answer
-      : "I don't have that information currently. Please contact the SPM team and we will assist you.");
   }
 
   function ask(question) {
@@ -158,7 +139,9 @@
 
     addMessage(cleanQuestion, 'user');
     questionInput.value = '';
-    window.setTimeout(() => respondTo(cleanQuestion), 180);
+    questionInput.disabled = true;
+    submitButton.disabled = true;
+    respondTo(cleanQuestion);
   }
 
   function openAssistant() {
