@@ -22,8 +22,8 @@ CORS(app)
 # Get Gemini settings
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Gemini model
-GEMINI_MODEL = "gemini-2.5-flash"
+# Keep the model configurable without requiring it in backend/.env.
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 
 
 @app.get("/health")
@@ -40,7 +40,7 @@ def chat():
     # Check API key
     if not GEMINI_API_KEY:
         return jsonify({
-            "reply": "Gemini API key is missing. Please add it to backend/.env"
+            "error": "Gemini API key is missing. Please add it to backend/.env"
         }), 503
 
 
@@ -49,7 +49,7 @@ def chat():
 
     if not isinstance(data, dict):
         return jsonify({
-            "reply": "Invalid request."
+            "error": "Invalid request."
         }), 400
 
 
@@ -58,13 +58,13 @@ def chat():
 
     if not message:
         return jsonify({
-            "reply": "Please enter a message."
+            "error": "Please enter a message."
         }), 400
 
 
     if len(message) > 4000:
         return jsonify({
-            "reply": "Please keep your message under 4000 characters."
+            "error": "Please keep your message under 4000 characters."
         }), 400
 
 
@@ -94,11 +94,11 @@ Visitor message:
         )
 
 
-        answer = response.text.strip()
+        answer = (response.text or "I could not generate a response. Please try again.").strip()
 
 
         return jsonify({
-            "reply": answer
+            "response": answer
         })
 
 
@@ -108,7 +108,7 @@ Visitor message:
         print("GEMINI ERROR:", e)
 
         return jsonify({
-            "reply": "The AI service is temporarily unavailable. Please try again shortly."
+            "error": "The AI service is temporarily unavailable. Please try again shortly."
         }), 502
 
 
