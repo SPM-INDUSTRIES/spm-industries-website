@@ -7,6 +7,10 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from google import genai
+from google.genai import types
+
+# Import SPM website search
+from spm_search import get_spm_information
 
 
 # Load environment variables from backend/.env
@@ -22,8 +26,10 @@ CORS(app)
 # Get Gemini settings
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Keep the model configurable without requiring it in backend/.env.
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+GEMINI_MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.6-flash"
+)
 
 
 @app.get("/health")
@@ -76,25 +82,60 @@ def chat():
         )
 
 
+        # Search SPM websites
+        print("Searching SPM websites...")
+
+        website_context = get_spm_information()
+
+
+        print("Website information loaded.")
+
+
+        # System instructions
+        system_instruction = """
+You are the official AI assistant for SPM Industries.
+
+You answer questions about:
+- SPM Academy
+- SPM Tech
+- SPM Industries services and information
+
+
+Rules:
+- Use only the provided SPM website information.
+- Give professional and friendly answers.
+- Keep answers concise.
+- Do not create false information.
+- If the information is not available, say:
+"I could not find that information on the SPM website."
+"""
+
+
         # Send request to Gemini
         response = client.models.generate_content(
             model=GEMINI_MODEL,
+
             contents=f"""
-You are the official AI assistant for SPM Industries in Batticaloa, Sri Lanka.
+SPM Website Information:
 
-Rules:
-- Give professional and friendly answers.
-- Help visitors understand SPM Industries.
-- Keep answers concise.
-- If you don't know something, ask the visitor to contact info@spm.industries.
+{website_context}
 
-Visitor message:
+
+Customer Question:
+
 {message}
-"""
+""",
+
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction
+            )
         )
 
 
-        answer = (response.text or "I could not generate a response. Please try again.").strip()
+        answer = (
+            response.text
+            or "I could not generate a response. Please try again."
+        ).strip()
 
 
         return jsonify({
@@ -104,7 +145,6 @@ Visitor message:
 
     except Exception as e:
 
-        # Show real error in terminal for debugging
         print("GEMINI ERROR:", e)
 
         return jsonify({
@@ -117,5 +157,6 @@ if __name__ == "__main__":
 
     app.run(
         host="127.0.0.1",
-        port=5000
+        port=5000,
+        debug=True
     )
