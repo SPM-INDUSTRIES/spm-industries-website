@@ -172,6 +172,28 @@
       .hero-actions .button { min-height: 51px; }
       .wa { right: 16px; bottom: 16px; }
     }
+
+    /* Keep intrinsic content and third-party embeds within every viewport. */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { width: 100%; max-width: 100%; }
+    body { overflow-x: clip; }
+    img, svg, video, canvas, iframe { max-width: 100%; }
+    .container { width: 100%; }
+    .about-grid > *, .why-grid > *, .service-grid > *, .feature-grid > *,
+    .location-grid > *, .contact-grid > *, .stats > * { min-width: 0; }
+    .location-details a, .contact a, footer a { overflow-wrap: anywhere; }
+
+    @media (max-width: 960px) and (min-width: 801px) {
+      .nav-wrap { padding-inline: 24px; }
+      .nav-links { gap: 18px; letter-spacing: 1.2px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: clamp(42px, 14vw, 58px); }
+      .hero h1 span { letter-spacing: 5px; }
+      .contact-phone { overflow-wrap: anywhere; }
+      .instagram-embed { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -234,5 +256,6 @@
     <span>Book Now</span>
   </a>
   <script>window.addEventListener('load',()=>setTimeout(()=>document.querySelector('.loader').classList.add('hide'),650));const nav=document.querySelector('.nav'),toggle=document.querySelector('.menu-toggle'),links=document.querySelector('.nav-links');window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>35));toggle.addEventListener('click',()=>{let open=links.classList.toggle('open');toggle.setAttribute('aria-expanded',open);toggle.textContent=open?'×':'☰'});links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.textContent='☰'}));const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));document.getElementById('year').textContent=new Date().getFullYear();</script>
+
 </body>
 </html>
