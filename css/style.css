@@ -43,6 +43,20 @@
 @media(max-width:1050px){.company-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.company-grid{grid-template-columns:1fr}}
 *,*::before,*::after{box-sizing:border-box}
+
+/* Soft SPM-blue hover treatment for content cards. */
+.company-card,
+.nav-card {
+  transition: all 0.3s ease;
+}
+
+.company-card:hover,
+.nav-card:hover {
+  background-color: #EAF7FC;
+  border-color: #0AA5D8;
+  color: var(--ink);
+  transform: translateY(-5px);
+}
 html,body{width:100%;max-width:100%}
 body{overflow-x:clip}
 img,svg,video,canvas,iframe{max-width:100%}
@@ -76,4 +90,36 @@ img,svg,video,canvas,iframe{max-width:100%}
 .timeline .time,
 .timeline .future h3 {
   color: #009bd4;
+}
+
+/* Keep the homepage hero balanced within the first viewport. */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: calc(72px + clamp(16px, 3vh, 32px));
+  padding-bottom: clamp(24px, 4vh, 40px) !important;
+  display: flex;
+  align-items: center;
+}
+
+.hero-grid {
+  width: 100%;
+  align-items: center;
+}
+
+@media (max-width: 1050px) and (min-width: 761px) {
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: calc(72px + 20px);
+    padding-bottom: 28px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    min-height: auto;
+    padding-top: calc(70px + 32px);
+    padding-bottom: 56px !important;
+  }
 }
