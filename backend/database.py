@@ -1,11 +1,13 @@
-"""SQLite storage for Mevaa customer inquiries."""
+"""SQLite storage for customer inquiries."""
 
 import os
 import sqlite3
 from pathlib import Path
 
 
-DATABASE_PATH = Path(os.getenv("INQUIRY_DATABASE", Path(__file__).with_name("inquiries.db")))
+DATABASE_PATH = Path(
+    os.getenv("INQUIRY_DATABASE", Path(__file__).with_name("inquiries.db"))
+)
 
 
 def _connect():

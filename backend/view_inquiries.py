@@ -1,4 +1,4 @@
-"""Print saved Mevaa inquiries in the terminal."""
+"""Print stored customer inquiries in the terminal."""
 
 from database import get_inquiries
 
@@ -9,5 +9,8 @@ if __name__ == "__main__":
         print("No inquiries have been submitted yet.")
     for inquiry in inquiries:
         print(f"#{inquiry['id']} · {inquiry['created_at']}")
-        print(f"Name: {inquiry['name']} | Phone: {inquiry['phone']} | Email: {inquiry['email']}")
+        print(
+            f"Name: {inquiry['name']} | Phone: {inquiry['phone']} | "
+            f"Email: {inquiry['email']}"
+        )
         print(f"Message: {inquiry['message']}\n")

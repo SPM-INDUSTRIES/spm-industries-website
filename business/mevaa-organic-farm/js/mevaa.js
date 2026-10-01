@@ -42,16 +42,16 @@
     revealItems.forEach(item => item.classList.add('visible'));
   }
 
-  const inquiryForm = document.querySelector('#inquiry-form');
-  const inquiryStatus = document.querySelector('#inquiry-status');
+  const inquiryForm = document.querySelector('#contact-inquiry-form');
+  const inquiryStatus = document.querySelector('#contact-inquiry-status');
   inquiryForm?.addEventListener('submit', async event => {
     event.preventDefault();
     if (!inquiryForm.reportValidity()) return;
 
     const submitButton = inquiryForm.querySelector('button[type="submit"]');
-    const originalButtonText = submitButton.innerHTML;
+    const originalButton = submitButton.innerHTML;
     submitButton.disabled = true;
-    submitButton.textContent = 'Sending…';
+    submitButton.textContent = 'Sending...';
     inquiryStatus.textContent = '';
     inquiryStatus.classList.remove('is-error');
 
@@ -72,7 +72,7 @@
       inquiryStatus.classList.add('is-error');
     } finally {
       submitButton.disabled = false;
-      submitButton.innerHTML = originalButtonText;
+      submitButton.innerHTML = originalButton;
     }
   });
 })();

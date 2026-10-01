@@ -1,6 +1,8 @@
-"""Flask APIs for the SPM chatbot and Mevaa Organic Farm."""
+"""Flask API for the SPM Industries Gemini chatbot."""
 
 import os
+import hmac
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,8 +23,13 @@ from database import create_inquiry, get_inquiries
 
 app = Flask(__name__)
 
-# Allow local frontend development; set CORS_ORIGINS to your hosted site domain in production.
-CORS(app, resources={r"/*": {"origins": os.getenv("CORS_ORIGINS", "*").split(",")}})
+# Allow local frontend use; configure CORS_ORIGINS for the deployed site.
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "*").split(",")
+    if origin.strip()
+]
+CORS(app, resources={r"/*": {"origins": allowed_origins}})
 
 
 @app.post("/api/inquiries")
@@ -31,16 +38,27 @@ def submit_inquiry():
     if not isinstance(data, dict):
         return jsonify({"error": "Please send a valid form submission."}), 400
 
-    name = str(data.get("name", "")).strip()
-    phone = str(data.get("phone", "")).strip()
-    email = str(data.get("email", "")).strip().lower()
-    message = str(data.get("message", "")).strip()
+    fields = ("name", "phone", "email", "message")
+    if any(not isinstance(data.get(field), str) for field in fields):
+        return jsonify({"error": "Please complete all inquiry fields."}), 400
+
+    name = data["name"].strip()
+    phone = data["phone"].strip()
+    email = data["email"].strip().lower()
+    message = data["message"].strip()
 
     if not name or len(name) > 100:
         return jsonify({"error": "Enter your name (up to 100 characters)."}), 400
-    if not phone or len(phone) > 30 or not any(char.isdigit() for char in phone):
+    if (
+        len(phone) > 30
+        or sum(character.isdigit() for character in phone) < 7
+        or not re.fullmatch(r"[+()\d\s.-]+", phone)
+    ):
         return jsonify({"error": "Enter a valid phone number."}), 400
-    if not email or len(email) > 254 or "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+    if (
+        len(email) > 254
+        or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email)
+    ):
         return jsonify({"error": "Enter a valid email address."}), 400
     if not message or len(message) > 3000:
         return jsonify({"error": "Enter a message (up to 3000 characters)."}), 400
@@ -48,7 +66,7 @@ def submit_inquiry():
     try:
         create_inquiry(name, phone, email, message)
     except Exception:
-        app.logger.exception("Could not save inquiry")
+        app.logger.exception("Could not save customer inquiry")
         return jsonify({"error": "We could not save your inquiry. Please try again."}), 500
 
     return jsonify({"message": "Thank you! Your inquiry has been sent."}), 201
@@ -58,12 +76,15 @@ def submit_inquiry():
 def list_inquiries():
     admin_token = os.getenv("INQUIRY_ADMIN_TOKEN", "")
     supplied_token = request.headers.get("X-Admin-Token", "")
-    if not admin_token or supplied_token != admin_token:
+    if not admin_token:
+        return jsonify({"error": "Inquiry viewing is not configured."}), 503
+    if not hmac.compare_digest(supplied_token, admin_token):
         return jsonify({"error": "Unauthorized."}), 401
+
     try:
         return jsonify({"inquiries": get_inquiries()})
     except Exception:
-        app.logger.exception("Could not read inquiries")
+        app.logger.exception("Could not load customer inquiries")
         return jsonify({"error": "Could not load inquiries."}), 500
 
 
@@ -75,9 +96,6 @@ GEMINI_MODEL = os.getenv(
     "gemini-3.6-flash"
 )
 
-# The SDK reads GEMINI_API_KEY from the environment after python-dotenv loads .env.
-client = genai.Client() if GEMINI_API_KEY else None
-
 
 @app.get("/health")
 def health():
@@ -85,47 +103,6 @@ def health():
         "status": "ok",
         "gemini_configured": bool(GEMINI_API_KEY)
     })
-
-
-@app.post("/api/chat")
-def mevaa_chat():
-    if client is None:
-        return jsonify({"error": "The chat assistant is not configured yet."}), 503
-
-    data = request.get_json(silent=True)
-    if not isinstance(data, dict):
-        return jsonify({"error": "Please send a valid message."}), 400
-
-    message = data.get("message")
-    if not isinstance(message, str) or not message.strip():
-        return jsonify({"error": "Please enter a message."}), 400
-    message = message.strip()
-    if len(message) > 2000:
-        return jsonify({"error": "Please keep your message under 2000 characters."}), 400
-
-    system_instruction = """
-You are a friendly assistant for Mevaa Flower Garden & Organic Farm in Batticaloa, Sri Lanka.
-Answer questions about the farm, plant availability, opening hours, landscaping services,
-and location using only the information below. Mevaa offers flower plants, vegetable
-plants, fruit trees, organic farming, and garden landscaping in Batticaloa. The listed
-phone number is 077 499 9172 (+94 77 499 9172). The website does not publish current
-inventory or opening hours, so never guess: explain that the customer should call the
-farm to confirm availability or hours. For landscaping inquiries, invite the customer to
-use the website inquiry form. Keep answers concise and warm. If something is unknown,
-say so clearly. Do not claim to place orders or book services.
-"""
-
-    try:
-        result = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=message,
-            config=types.GenerateContentConfig(system_instruction=system_instruction),
-        )
-        answer = (result.text or "I could not prepare a reply. Please try again.").strip()
-        return jsonify({"response": answer})
-    except Exception:
-        app.logger.exception("Mevaa Gemini chat request failed")
-        return jsonify({"error": "The chat assistant is temporarily unavailable. Please try again."}), 502
 
 
 @app.post("/chat")
@@ -165,6 +142,11 @@ def chat():
     try:
 
         # Connect to Gemini
+        client = genai.Client(
+            api_key=GEMINI_API_KEY
+        )
+
+
         # Search SPM websites
         print("Searching SPM websites...")
 

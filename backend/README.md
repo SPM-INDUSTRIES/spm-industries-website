@@ -1,8 +1,8 @@
 # SPM and Mevaa backend
 
-This Flask app keeps the existing SPM chatbot API and adds a Mevaa customer inquiry API backed by SQLite.
+This Flask app preserves the existing SPM chatbot (`/chat`) and adds contact inquiry handling for Mevaa Organic Farm. Inquiry records are stored in a local SQLite database.
 
-## Install (PowerShell in VS Code)
+## Install in VS Code (PowerShell)
 
 From the project root:
 
@@ -11,37 +11,46 @@ cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-Copy-Item .env.example .env
 ```
 
-Edit `backend/.env`: replace `GEMINI_API_KEY` with your Google AI Studio API key and replace `INQUIRY_ADMIN_TOKEN` with a private, long value. Keep `.env` private and never put the Gemini key in HTML or JavaScript. The Mevaa chat uses `MEVAA_GEMINI_MODEL` (default `gemini-2.5-flash`); the existing SPM chatbot keeps its separate `GEMINI_MODEL` setting. If PowerShell blocks virtual environment activation, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` in that terminal, then activate again.
+`backend/.env` already exists in this project. Keep your existing Gemini API key and add a private `INQUIRY_ADMIN_TOKEN` value to it, for example:
 
-## Start locally
+```text
+INQUIRY_ADMIN_TOKEN=replace_with_a_long_private_value
+```
 
-In the backend terminal (with the virtual environment activated):
+If you do not have a `.env` file, create one by copying `.env.example`, then set both values. Never add secret keys to website HTML or JavaScript.
+
+## Start the backend and website
+
+In the backend terminal:
 
 ```powershell
 python app.py
 ```
 
-The API runs at `http://127.0.0.1:5000`. Open a second VS Code terminal in the project root and serve the existing site:
+In a second terminal, from the project root:
 
 ```powershell
 python -m http.server 8000
 ```
 
-Open `http://127.0.0.1:8000/business/mevaa-organic-farm/` and submit the inquiry form. The backend creates `backend/inquiries.db` automatically the first time it saves a submission.
+Open `http://127.0.0.1:8000/business/mevaa-organic-farm/` and use the inquiry form in the Visit section. The form sends `name`, `phone`, `email`, and `message` as JSON to `POST http://127.0.0.1:5000/api/inquiries`. The backend validates the fields and returns a success message or a useful error.
 
-## Inquiries
+## View submitted inquiries
 
-- `POST /api/inquiries` accepts JSON fields `name`, `phone`, `email`, and `message`; it validates them and returns a success or error message.
-- `GET /api/inquiries` returns saved inquiries and requires the `X-Admin-Token` header to match `INQUIRY_ADMIN_TOKEN` in `.env`.
-- `POST /api/chat` accepts `{"message":"..."}` and returns a Mevaa-specific Gemini answer. It requires `GEMINI_API_KEY`.
-- To print submissions in the terminal, from the `backend` directory run `python view_inquiries.py`.
-- SQLite stores each inquiry in the `inquiries` table in `backend/inquiries.db`. Keep this file backed up; it contains customer contact details.
+From the `backend` directory, with the virtual environment active:
 
-The inquiry form and chat widget currently point at the local API. For a deployed site, update their API URLs to the HTTPS address where this Flask API is hosted and set `CORS_ORIGINS` to your website's origin.
+```powershell
+python view_inquiries.py
+```
 
-## Existing chatbot
+The records are saved in `backend/inquiries.db`. The `GET /api/inquiries` endpoint is also available with the `X-Admin-Token` header set to the value of `INQUIRY_ADMIN_TOKEN` in `.env`.
 
-The original `POST /chat` and `GET /health` routes remain available. Set `GEMINI_API_KEY` in `.env` to enable chat responses.
+## New files
+
+- `database.py` creates the SQLite table and saves/loads inquiries.
+- `view_inquiries.py` prints saved submissions in the terminal.
+- `.env.example` documents the required private settings.
+
+The existing `requirements.txt` already has Flask, Flask-CORS, `google-genai`, and `python-dotenv`. For deployment, host the Flask API over HTTPS, update the form's `data-api-url` in the Mevaa page, and set `CORS_ORIGINS` to your website origin.
