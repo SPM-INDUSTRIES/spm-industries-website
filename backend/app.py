@@ -74,7 +74,9 @@ GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.6-flash"
 )
-MEVAA_GEMINI_MODEL = os.getenv("MEVAA_GEMINI_MODEL", "gemini-2.5-flash")
+
+# The SDK reads GEMINI_API_KEY from the environment after python-dotenv loads .env.
+client = genai.Client() if GEMINI_API_KEY else None
 
 
 @app.get("/health")
@@ -87,7 +89,7 @@ def health():
 
 @app.post("/api/chat")
 def mevaa_chat():
-    if not GEMINI_API_KEY:
+    if client is None:
         return jsonify({"error": "The chat assistant is not configured yet."}), 503
 
     data = request.get_json(silent=True)
@@ -102,7 +104,7 @@ def mevaa_chat():
         return jsonify({"error": "Please keep your message under 2000 characters."}), 400
 
     system_instruction = """
-You are the friendly online assistant for Mevaa Flower Garden & Organic Farm in Batticaloa, Sri Lanka.
+You are a friendly assistant for Mevaa Flower Garden & Organic Farm in Batticaloa, Sri Lanka.
 Answer questions about the farm, plant availability, opening hours, landscaping services,
 and location using only the information below. Mevaa offers flower plants, vegetable
 plants, fruit trees, organic farming, and garden landscaping in Batticaloa. The listed
@@ -114,9 +116,8 @@ say so clearly. Do not claim to place orders or book services.
 """
 
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
         result = client.models.generate_content(
-            model=MEVAA_GEMINI_MODEL,
+            model="gemini-2.5-flash",
             contents=message,
             config=types.GenerateContentConfig(system_instruction=system_instruction),
         )
@@ -164,11 +165,6 @@ def chat():
     try:
 
         # Connect to Gemini
-        client = genai.Client(
-            api_key=GEMINI_API_KEY
-        )
-
-
         # Search SPM websites
         print("Searching SPM websites...")
 
