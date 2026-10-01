@@ -1,4 +1,4 @@
-"""Flask API for the SPM Industries Gemini chatbot."""
+"""Flask APIs for the SPM chatbot and Mevaa Organic Farm."""
 
 import os
 from pathlib import Path
@@ -16,11 +16,55 @@ from spm_search import get_spm_information
 # Load environment variables from backend/.env
 load_dotenv(Path(__file__).with_name(".env"), override=True)
 
+from database import create_inquiry, get_inquiries
+
 
 app = Flask(__name__)
 
-# Allow frontend website to communicate with backend
-CORS(app)
+# Allow local frontend development; set CORS_ORIGINS to your hosted site domain in production.
+CORS(app, resources={r"/*": {"origins": os.getenv("CORS_ORIGINS", "*").split(",")}})
+
+
+@app.post("/api/inquiries")
+def submit_inquiry():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please send a valid form submission."}), 400
+
+    name = str(data.get("name", "")).strip()
+    phone = str(data.get("phone", "")).strip()
+    email = str(data.get("email", "")).strip().lower()
+    message = str(data.get("message", "")).strip()
+
+    if not name or len(name) > 100:
+        return jsonify({"error": "Enter your name (up to 100 characters)."}), 400
+    if not phone or len(phone) > 30 or not any(char.isdigit() for char in phone):
+        return jsonify({"error": "Enter a valid phone number."}), 400
+    if not email or len(email) > 254 or "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        return jsonify({"error": "Enter a valid email address."}), 400
+    if not message or len(message) > 3000:
+        return jsonify({"error": "Enter a message (up to 3000 characters)."}), 400
+
+    try:
+        create_inquiry(name, phone, email, message)
+    except Exception:
+        app.logger.exception("Could not save inquiry")
+        return jsonify({"error": "We could not save your inquiry. Please try again."}), 500
+
+    return jsonify({"message": "Thank you! Your inquiry has been sent."}), 201
+
+
+@app.get("/api/inquiries")
+def list_inquiries():
+    admin_token = os.getenv("INQUIRY_ADMIN_TOKEN", "")
+    supplied_token = request.headers.get("X-Admin-Token", "")
+    if not admin_token or supplied_token != admin_token:
+        return jsonify({"error": "Unauthorized."}), 401
+    try:
+        return jsonify({"inquiries": get_inquiries()})
+    except Exception:
+        app.logger.exception("Could not read inquiries")
+        return jsonify({"error": "Could not load inquiries."}), 500
 
 
 # Get Gemini settings
@@ -30,6 +74,7 @@ GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.6-flash"
 )
+MEVAA_GEMINI_MODEL = os.getenv("MEVAA_GEMINI_MODEL", "gemini-2.5-flash")
 
 
 @app.get("/health")
@@ -38,6 +83,48 @@ def health():
         "status": "ok",
         "gemini_configured": bool(GEMINI_API_KEY)
     })
+
+
+@app.post("/api/chat")
+def mevaa_chat():
+    if not GEMINI_API_KEY:
+        return jsonify({"error": "The chat assistant is not configured yet."}), 503
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please send a valid message."}), 400
+
+    message = data.get("message")
+    if not isinstance(message, str) or not message.strip():
+        return jsonify({"error": "Please enter a message."}), 400
+    message = message.strip()
+    if len(message) > 2000:
+        return jsonify({"error": "Please keep your message under 2000 characters."}), 400
+
+    system_instruction = """
+You are the friendly online assistant for Mevaa Flower Garden & Organic Farm in Batticaloa, Sri Lanka.
+Answer questions about the farm, plant availability, opening hours, landscaping services,
+and location using only the information below. Mevaa offers flower plants, vegetable
+plants, fruit trees, organic farming, and garden landscaping in Batticaloa. The listed
+phone number is 077 499 9172 (+94 77 499 9172). The website does not publish current
+inventory or opening hours, so never guess: explain that the customer should call the
+farm to confirm availability or hours. For landscaping inquiries, invite the customer to
+use the website inquiry form. Keep answers concise and warm. If something is unknown,
+say so clearly. Do not claim to place orders or book services.
+"""
+
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        result = client.models.generate_content(
+            model=MEVAA_GEMINI_MODEL,
+            contents=message,
+            config=types.GenerateContentConfig(system_instruction=system_instruction),
+        )
+        answer = (result.text or "I could not prepare a reply. Please try again.").strip()
+        return jsonify({"response": answer})
+    except Exception:
+        app.logger.exception("Mevaa Gemini chat request failed")
+        return jsonify({"error": "The chat assistant is temporarily unavailable. Please try again."}), 502
 
 
 @app.post("/chat")

@@ -41,4 +41,38 @@
   } else {
     revealItems.forEach(item => item.classList.add('visible'));
   }
+
+  const inquiryForm = document.querySelector('#inquiry-form');
+  const inquiryStatus = document.querySelector('#inquiry-status');
+  inquiryForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!inquiryForm.reportValidity()) return;
+
+    const submitButton = inquiryForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending…';
+    inquiryStatus.textContent = '';
+    inquiryStatus.classList.remove('is-error');
+
+    try {
+      const response = await fetch(inquiryForm.dataset.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(inquiryForm)))
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'We could not send your inquiry. Please try again.');
+      inquiryStatus.textContent = result.message;
+      inquiryForm.reset();
+    } catch (error) {
+      inquiryStatus.textContent = error.message.includes('Failed to fetch')
+        ? 'The inquiry service is unavailable. Please try again in a moment.'
+        : error.message;
+      inquiryStatus.classList.add('is-error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerHTML = originalButtonText;
+    }
+  });
 })();
